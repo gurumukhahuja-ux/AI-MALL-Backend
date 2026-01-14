@@ -89,7 +89,8 @@ router.post("/login", async (req, res) => {
       email: user.email,
       message: "LogIn Successfully",
       token: token,
-      role: user.role
+      role: user.role,
+      avatar: user.avatar
     });
 
   } catch (err) {

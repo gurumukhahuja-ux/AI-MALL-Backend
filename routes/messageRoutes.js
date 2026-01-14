@@ -1,6 +1,8 @@
 import express from 'express';
 import VendorMessage from '../models/VendorMessage.js';
 import Agent from '../models/Agents.js';
+import Notification from '../models/Notification.js';
+import { verifyToken } from '../middleware/authorization.js';
 import { sendVendorContactEmail } from '../services/emailService.js';
 import rateLimit from 'express-rate-limit';
 
@@ -315,6 +317,42 @@ router.get('/:id', async (req, res) => {
     } catch (error) {
         console.error('Fetch message error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// POST /api/messages/admin-direct - Admin directly contacts a vendor
+router.post('/admin-direct', verifyToken, async (req, res) => {
+    try {
+        const { vendorId, subject, message } = req.body;
+
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Access denied. Admins only.' });
+        }
+
+        if (!vendorId || !subject || !message) {
+            return res.status(400).json({ success: false, message: 'VendorId, subject and message are required' });
+        }
+
+        // 1. Create In-App Notification for Vendor
+        await Notification.create({
+            userId: vendorId,
+            title: `Message from Admin: ${subject}`,
+            message: message,
+            type: 'info',
+            role: 'vendor'
+        });
+
+        // 2. Opt-in: Send email in background if possible
+        // (Reusing logic from send-reply or similar if needed, keeping it simple for now)
+
+        res.json({
+            success: true,
+            message: 'Message sent to vendor successfully'
+        });
+
+    } catch (error) {
+        console.error('Admin direct message error:', error);
+        res.status(500).json({ success: false, message: 'Failed to send direct message' });
     }
 });
 

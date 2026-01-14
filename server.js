@@ -21,6 +21,8 @@ import aibizRoutes from './routes/aibizRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import revenueRoutes from './routes/revenueRoutes.js';
 import supportRoutes from './routes/supportRoutes.js';
+import supportChatRoutes from './routes/supportChatRoutes.js';
+import vendorChatRoutes from './routes/vendorChatRoutes.js';
 // import aibaseApp from './aibase_module/app.js';
 
 
@@ -104,6 +106,10 @@ app.use('/api/revenue', revenueRoutes);
 
 // Support Routes
 app.use('/api/support', supportRoutes);
+app.use('/api/support-chat', supportChatRoutes);
+
+// Vendor Chat Routes
+app.use('/api/vendor-chat', vendorChatRoutes);
 
 
 // Global Error Handler

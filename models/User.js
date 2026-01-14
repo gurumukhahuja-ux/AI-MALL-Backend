@@ -70,6 +70,23 @@ const userSchema = new mongoose.Schema({
     rejectionReason: {
         type: String,
         trim: true
+    },
+    profile: {
+        settings: {
+            country: { type: String, default: 'India (English)' },
+            theme: { type: String, default: 'light' },
+            timezone: { type: String, default: 'India (GMT+5:30)' },
+            currency: { type: String, default: 'INR (₹)' }
+        },
+        notifications: {
+            email: { type: Boolean, default: true },
+            push: { type: Boolean, default: false }
+        },
+        stats: {
+            credits: { type: String, default: "Infinity" },
+            intelligenceLevel: { type: String, default: "Level 42" },
+            securityStatus: { type: String, default: "Shielded" }
+        }
     }
 
 }, { timestamps: true });

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-export const verifyToken = (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -10,18 +11,26 @@ export const verifyToken = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     if (!token) {
-         req.user = null;
+        req.user = null;
         return res.status(401).json({ message: "Invalid token format" });
     }
-    
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        
+
+        // Fetch fresh user data from DB to ensure role is up-to-date
+        const user = await User.findById(decoded.id || decoded.userId || decoded._id).select('-password');
+
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        // Merge decoded user with fresh DB data (DB takes precedence for role)
+        req.user = { ...decoded, ...user.toObject(), role: user.role };
+
         next();
-        
     } catch (error) {
+        console.error("Token verification failed:", error.message);
         return res.status(401).json({ message: "Invalid or expired token" });
     }
 };

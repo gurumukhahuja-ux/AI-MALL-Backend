@@ -6,7 +6,12 @@ import User from '../models/User.js';
 import Agent from '../models/Agents.js';
 import nodemailer from 'nodemailer';
 import { verifyToken } from '../middleware/authorization.js';
+<<<<<<< HEAD
 import generateTokenAndSetCookies from '../utils/generateTokenAndSetCookies.js';
+=======
+import { isAdmin } from '../middleware/isAdmin.js';
+import AuditLog from '../models/AuditLog.js';
+>>>>>>> ad13b78 (admin)
 
 const router = express.Router();
 
@@ -325,14 +330,8 @@ router.get('/admin/all', verifyToken, async (req, res) => {
 });
 
 // PATCH /api/vendor/admin/approve/:id - Approve Vendor (Admin Only)
-router.patch('/admin/approve/:id', verifyToken, async (req, res) => {
+router.patch('/admin/approve/:id', verifyToken, isAdmin, async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Admin access required'
-            });
-        }
 
         const vendor = await User.findById(req.params.id);
 
@@ -388,6 +387,16 @@ router.patch('/admin/approve/:id', verifyToken, async (req, res) => {
             }
         }
 
+        // Record Audit Log
+        await AuditLog.create({
+            adminId: req.user.id,
+            action: 'APPROVE_VENDOR',
+            targetId: vendor._id,
+            targetType: 'User',
+            details: `Approved vendor account: ${vendor.name} (${vendor.email})`,
+            ipAddress: req.ip
+        });
+
         res.json({
             success: true,
             message: 'Vendor approved successfully',
@@ -409,14 +418,8 @@ router.patch('/admin/approve/:id', verifyToken, async (req, res) => {
 });
 
 // PATCH /api/vendor/admin/reject/:id - Reject Vendor (Admin Only)
-router.patch('/admin/reject/:id', verifyToken, async (req, res) => {
+router.patch('/admin/reject/:id', verifyToken, isAdmin, async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Admin access required'
-            });
-        }
 
         const { reason } = req.body;
 
@@ -478,6 +481,16 @@ router.patch('/admin/reject/:id', verifyToken, async (req, res) => {
                 console.error('Failed to send rejection email (non-fatal):', emailError);
             }
         }
+
+        // Record Audit Log
+        await AuditLog.create({
+            adminId: req.user.id,
+            action: 'REJECT_VENDOR',
+            targetId: vendor._id,
+            targetType: 'User',
+            details: `Rejected vendor account: ${vendor.name}. Reason: ${reason}`,
+            ipAddress: req.ip
+        });
 
         res.json({
             success: true,

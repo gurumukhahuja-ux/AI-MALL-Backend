@@ -48,6 +48,45 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Reply to a ticket
+router.post('/:id/reply', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { message, sender, senderId } = req.body;
+
+        if (!message || !sender) {
+            return res.status(400).json({ message: 'Message and sender are required' });
+        }
+
+        const ticket = await SupportTicket.findById(id);
+        if (!ticket) {
+            return res.status(404).json({ message: 'Ticket not found' });
+        }
+
+        ticket.replies.push({
+            sender,
+            message,
+            senderId,
+            createdAt: new Date()
+        });
+
+        ticket.updatedAt = new Date();
+
+        // Auto-update status based on sender
+        if (sender === 'admin' && ticket.status === 'open') {
+            ticket.status = 'in_progress';
+        } else if (sender === 'user' && ticket.status === 'resolved') {
+            ticket.status = 'in_progress'; // Re-open if user replies
+        }
+
+        await ticket.save();
+        res.json(ticket);
+    } catch (error) {
+        console.error("Error adding reply:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Get tickets for a user (Vendor Support History)
 router.get('/user/:userId', async (req, res) => {
     try {
@@ -63,6 +102,17 @@ router.get('/user/:userId', async (req, res) => {
         res.json(tickets);
     } catch (error) {
         console.error('Error fetching user tickets:', error);
+        res.status(500).json({ error: 'Failed to fetch tickets' });
+    }
+});
+
+// Admin: Get all tickets
+router.get('/admin/all', async (req, res) => {
+    try {
+        const tickets = await SupportTicket.find().sort({ createdAt: -1 });
+        res.json(tickets);
+    } catch (error) {
+        console.error('Error fetching all tickets:', error);
         res.status(500).json({ error: 'Failed to fetch tickets' });
     }
 });
