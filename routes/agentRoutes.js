@@ -1,10 +1,15 @@
 import express from 'express'
+import mongoose from 'mongoose'
 import agentModel from '../models/Agents.js'
 import userModel from "../models/User.js"
 import notificationModel from "../models/Notification.js"
 import transactionModel from "../models/Transaction.js"
+import vendorChatModel from "../models/VendorChat.js"
+import vendorMessageModel from "../models/VendorMessage.js"
 import { verifyToken } from '../middleware/authorization.js'
 import { checkKillSwitch } from '../middleware/checkKillSwitch.js'
+import { isAdmin } from '../middleware/isAdmin.js'
+import AuditLog from '../models/AuditLog.js'
 const route = express.Router()
 
 //get all agents
@@ -64,6 +69,8 @@ route.post('/', verifyToken, async (req, res) => {
     const slug = `${baseSlug}-${uniqueSuffix}`;
 
     // Prepare agent data
+    const isAdmin = req.user?.role?.toLowerCase() === 'admin';
+
     const agentData = {
       agentName,
       slug, // Explicitly set slug
@@ -73,8 +80,8 @@ route.post('/', verifyToken, async (req, res) => {
       ...(avatar && { avatar }),
       url,
       pricing: pricingData,
-      status: 'Inactive',
-      reviewStatus: 'Draft',
+      status: isAdmin ? 'Live' : 'Inactive',
+      reviewStatus: isAdmin ? 'Approved' : 'Draft',
       owner: req.user.id
     };
 
@@ -309,13 +316,28 @@ route.patch('/:id/reactivate', verifyToken, async (req, res) => {
 
 
 // Approve (Admin)
+<<<<<<< HEAD
 route.post('/approve/:id', verifyToken, async (req, res) => {
+  const { id } = req.params;
+  console.log(`[APPROVE REQUEST] App ID: ${id} by User: ${req.user.id}`);
+
   try {
-    // Check Admin Role
+    // 1. Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.error(`[APPROVE ERROR] Invalid Agent ID: ${id}`);
+      return res.status(400).json({ error: "Invalid Agent ID format." });
+    }
+
+    // 2. Check Admin Role
     const adminUser = await userModel.findById(req.user.id);
-    if (adminUser?.role !== 'admin') {
+    if (!adminUser || adminUser.role !== 'admin') {
+      console.error(`[APPROVE ERROR] Unauthorized. User ${req.user.id} is not an admin.`);
       return res.status(403).json({ error: "Access Denied. Admins only." });
     }
+=======
+route.post('/approve/:id', verifyToken, isAdmin, async (req, res) => {
+  try {
+>>>>>>> ad13b78 (admin)
 
     const { message, avatar } = req.body;
     const updateData = {
@@ -329,52 +351,76 @@ route.post('/approve/:id', verifyToken, async (req, res) => {
     }
 
     const agent = await agentModel.findByIdAndUpdate(
-      req.params.id,
+      id,
       updateData,
       { new: true }
     );
 
-    if (agent && agent.owner) {
-      // 1. Notify Vendor
-      await notificationModel.create({
-        userId: agent.owner,
-        message: `Time to celebrate! '${agent.agentName}' has been approved and is now live on the AI Mall Marketplace.${message ? ' Note: ' + message : ''}`,
-        type: 'success',
-        role: 'vendor',
-        targetId: agent._id
-      });
+    if (!agent) {
+      console.error(`[APPROVE ERROR] Agent not found: ${id}`);
+      return res.status(404).json({ error: "Agent not found." });
+    }
 
-      // 2. Notify All Users (Marketplace Update)
-      // Broadcast to everyone (Admins, Vendors, Users) so they all see the new app
-      const allUsers = await userModel.find({}).select('_id');
-      const notifications = allUsers.map(u => ({
-        userId: u._id,
-        message: `New Arrival: '${agent.agentName}' is now available in the marketplace. Check it out!`,
-        type: 'info',
-        role: 'user',
-        targetId: agent._id
-      }));
+    console.log(`[APPROVE SUCCESS] Updated Agent '${agent.agentName}' status to Live.`);
 
-      if (notifications.length > 0) {
-        await notificationModel.insertMany(notifications);
+    // 3. Handle Notifications (Non-blocking if possible, but for now we wait)
+    if (agent.owner) {
+      try {
+        // Notify Vendor
+        await notificationModel.create({
+          userId: agent.owner,
+          message: `Time to celebrate! '${agent.agentName}' has been approved and is now live on the AI Mall Marketplace.${message ? ' Note: ' + message : ''}`,
+          type: 'success',
+          role: 'vendor',
+          targetId: agent._id
+        });
+        console.log(`[APPROVE NOTIFY] Notified Vendor ${agent.owner}`);
+
+        // Notify All Users (Marketplace Update)
+        const allUsers = await userModel.find({}).select('_id');
+        if (allUsers.length > 0) {
+          const notifications = allUsers.map(u => ({
+            userId: u._id,
+            message: `New Arrival: '${agent.agentName}' is now available in the marketplace. Check it out!`,
+            type: 'info',
+            role: 'user',
+            targetId: agent._id
+          }));
+
+          // Batch insert in chunks if too many users
+          const chunkSize = 100;
+          for (let i = 0; i < notifications.length; i += chunkSize) {
+            const chunk = notifications.slice(i, i + chunkSize);
+            await notificationModel.insertMany(chunk);
+          }
+          console.log(`[APPROVE NOTIFY] Broadcasted to ${notifications.length} users.`);
+        }
+      } catch (notifyErr) {
+        console.error('[APPROVE NOTIFY ERROR]', notifyErr);
+        // We don't fail the whole request just because notifications failed
       }
     }
 
+    // Record Audit Log
+    await AuditLog.create({
+      adminId: req.user.id,
+      action: 'APPROVE_AGENT',
+      targetId: agent._id,
+      targetType: 'Agent',
+      details: `Approved agent: ${agent.agentName}. Note: ${message || 'No note'}`,
+      ipAddress: req.ip
+    });
+
     res.json(agent);
   } catch (err) {
-    console.error('[APPROVE ERROR]', err);
+    console.error('[APPROVE CRITICAL ERROR]', err);
     res.status(500).json({ error: err.message });
   }
 });
 
 // Reject (Admin)
-route.post('/reject/:id', verifyToken, async (req, res) => {
+route.post('/reject/:id', verifyToken, isAdmin, async (req, res) => {
   try {
-    // Check Admin Role
-    const adminUser = await userModel.findById(req.user.id);
-    if (adminUser?.role !== 'admin') {
-      return res.status(403).json({ error: "Access Denied. Admins only." });
-    }
 
     const { reason } = req.body;
     const agent = await agentModel.findByIdAndUpdate(
@@ -394,6 +440,16 @@ route.post('/reject/:id', verifyToken, async (req, res) => {
       });
     }
 
+    // Record Audit Log
+    await AuditLog.create({
+      adminId: req.user.id,
+      action: 'REJECT_AGENT',
+      targetId: agent._id,
+      targetType: 'Agent',
+      details: `Rejected agent: ${agent.agentName}. Reason: ${reason}`,
+      ipAddress: req.ip
+    });
+
     res.json(agent);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -405,13 +461,34 @@ route.post('/reject/:id', verifyToken, async (req, res) => {
 // Get agent details with usage stats (for vendor dashboard)
 route.get('/:id/details', verifyToken, async (req, res) => {
   try {
-    const agent = await agentModel.findById(req.params.id);
+    const { id } = req.params;
+    console.log(`[AGENT DETAILS] Fetching details for ID: ${id} requested by User: ${req.user.id}`);
+
+    // Validate ID format to prevent CastErrors
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.warn(`[AGENT DETAILS] Invalid ObjectId format: ${id}`);
+      return res.status(400).json({ error: "Invalid Agent ID format" });
+    }
+
+    const agent = await agentModel.findById(id);
     if (!agent) {
+      console.warn(`[AGENT DETAILS] Agent not found: ${id}`);
       return res.status(404).json({ error: "Agent not found" });
     }
 
+    if (agent.isDeleted) {
+      console.warn(`[AGENT DETAILS] Agent is marked as deleted: ${id}`);
+      return res.status(404).json({ error: "Agent has been removed" });
+    }
+
     // Get usage statistics from transactions
-    const transactions = await transactionModel.find({ agentId: req.params.id });
+    let transactions = [];
+    try {
+      transactions = await transactionModel.find({ agentId: id });
+    } catch (dbErr) {
+      console.error(`[AGENT DETAILS] DB Error fetching transactions for ${id}:`, dbErr);
+      // Continue without transactions rather than crashing
+    }
 
     // Calculate plan-wise breakdown
     const planCounts = {
@@ -423,7 +500,9 @@ route.get('/:id/details', verifyToken, async (req, res) => {
     // Get unique users
     const uniqueUsers = new Set();
     transactions.forEach(t => {
-      uniqueUsers.add(t.buyerId?.toString());
+      if (t.buyerId) {
+        uniqueUsers.add(t.buyerId.toString());
+      }
     });
 
     // Convert to array format for frontend
@@ -436,16 +515,17 @@ route.get('/:id/details', verifyToken, async (req, res) => {
     const usage = {
       totalUsers: uniqueUsers.size,
       planBreakdown,
-      recentActivity: [] // Can be populated with actual activity data
+      recentActivity: []
     };
 
+    console.log(`[AGENT DETAILS] Success for ${id}. Users found: ${uniqueUsers.size}`);
     res.json({
       agent,
       usage
     });
   } catch (err) {
-    console.error('[AGENT DETAILS ERROR]', err);
-    res.status(500).json({ error: "Failed to fetch agent details" });
+    console.error('[AGENT DETAILS ERROR] Fatal:', err);
+    res.status(500).json({ error: "Failed to fetch agent details", details: err.message });
   }
 });
 
@@ -473,88 +553,61 @@ route.put('/:id', verifyToken, async (req, res) => {
 
 route.delete('/:id', verifyToken, async (req, res) => {
   try {
-    // Verify Agent Exists
+    // 1. Strict RBAC: Only Admin can delete agents
+    const isAdmin = req.user?.role?.toLowerCase() === 'admin';
+    if (!isAdmin) {
+      console.log(`[DELETE AGENT] Access Denied for non-admin User ${req.user.id}`);
+      return res.status(403).json({ error: "Access Denied. Only administrators can delete agents." });
+    }
+
+    // 2. Verify Agent Exists
     const agent = await agentModel.findById(req.params.id);
     if (!agent) {
       return res.status(404).json({ error: "Agent not found" });
     }
 
-    // Check if requester is Admin
-    const requestor = await userModel.findById(req.user.id);
-    const isAdmin = requestor?.role === 'admin';
+    console.log(`[DELETE AGENT] Admin ${req.user.id} is deleting Agent ${agent._id} (${agent.agentName})`);
 
-    // 1. Check if Vendor (Owner) - PRIORITIZE THIS even if user is Admin, to allow testing/workflows
-    // Use string comparison for ObjectIds
-    if (agent.owner.toString() === req.user.id.toString()) {
-      console.log(`[DELETE AGENT] User ${req.user.id} is OWNER of Agent ${agent._id}. Initiating Pending Deletion.`);
-      agent.deletionStatus = 'Pending';
-      await agent.save();
+    // 3. Cascading Deletion - Clean up all related data
 
-      // Notify Admins
-      const admins = await userModel.find({ role: 'admin' });
-      // Filter out the requestor if they are an admin, to avoid spamming themselves? 
-      // Actually, if testing, it's good to see the notification.
+    // 3.1 Remove agent from ALL users' owned agents list
+    await userModel.updateMany(
+      { agents: agent._id },
+      { $pull: { agents: agent._id } }
+    );
 
-      const adminNotifications = admins.map(admin => ({
-        userId: admin._id,
-        message: `Deletion Request: Vendor '${requestor?.name || 'Unknown'}' has requested to delete '${agent.agentName}'.`,
-        type: 'warning',
-        role: 'admin',
-        targetId: agent._id
-      }));
+    // 3.2 Delete associated Transactions
+    await transactionModel.deleteMany({ agentId: agent._id });
 
-      if (adminNotifications.length > 0) {
-        await notificationModel.insertMany(adminNotifications);
-      }
+    // 3.3 Delete associated VendorChats
+    await vendorChatModel.deleteMany({ agentId: agent._id });
 
-      return res.json({ message: "Deletion request submitted. Pending Admin Approval.", deletionStatus: 'Pending', agentId: req.params.id });
-    }
+    // 3.4 Delete associated VendorMessages
+    await vendorMessageModel.deleteMany({ agentId: agent._id });
 
-    // 2. If NOT Owner, but IS Admin -> Proceed with Hard Delete (Moderation Action)
-    if (isAdmin) {
-      console.log(`[DELETE AGENT] User ${req.user.id} is ADMIN (and not owner). Performing Hard Delete.`);
-      // Notify Subscribers (Safely) - Send BEFORE deleting
-      try {
-        const transactions = await transactionModel.find({ agentId: agent._id });
-        const uniqueBuyers = [...new Set(transactions.map(t => t.buyerId?.toString()))].filter(id => id);
+    // 3.5 Delete associated Notifications (where targetId is this agent)
+    await notificationModel.deleteMany({ targetId: agent._id });
 
-        const notifications = uniqueBuyers.map(userId => ({
-          userId,
-          message: `Important Update: '${agent.agentName}' has been removed from the marketplace. Your subscription will not renew.`,
-          type: 'warning',
-          role: 'user',
-          targetId: agent._id // Keep ID for reference even if agent is gone
-        }));
+    // 3.6 Final: Hard Delete the Agent itself
+    await agentModel.findByIdAndDelete(req.params.id);
 
-        if (notifications.length > 0) {
-          await notificationModel.insertMany(notifications);
-        }
-      } catch (notifErr) {
-        console.error("Failed to send deletion notifications:", notifErr);
-      }
+    console.log(`[DELETE AGENT] Successfully deleted agent and all related records.`);
 
-      // Hard Delete from Database
-      await agentModel.findByIdAndDelete(req.params.id);
-      return res.json({ message: "Agent permanently deleted by Admin", agentId: req.params.id });
-    }
-
-    // If neither Admin nor Owner
-    console.log(`[DELETE AGENT] Access Denied for User ${req.user.id}`);
-    return res.status(403).json({ error: "Access Denied" });
+    res.json({
+      success: true,
+      message: "Agent and all associated data permanently deleted by Admin",
+      agentId: req.params.id
+    });
 
   } catch (err) {
+    console.error('[DELETE AGENT ERROR]', err);
     res.status(500).json({ error: err.message });
   }
 });
 
 // Admin Approve Deletion
-route.post('/admin/approve-deletion/:id', verifyToken, async (req, res) => {
+route.post('/admin/approve-deletion/:id', verifyToken, isAdmin, async (req, res) => {
   try {
-    const adminUser = await userModel.findById(req.user.id);
-    if (adminUser?.role !== 'admin') {
-      return res.status(403).json({ error: "Access Denied. Admins only." });
-    }
-
     const agent = await agentModel.findById(req.params.id);
     if (!agent) return res.status(404).json({ error: "Agent not found" });
 
@@ -578,6 +631,17 @@ route.post('/admin/approve-deletion/:id', verifyToken, async (req, res) => {
     if (notifications.length > 0) await notificationModel.insertMany(notifications);
 
     await agentModel.findByIdAndDelete(req.params.id);
+
+    // Record Audit Log
+    await AuditLog.create({
+      adminId: req.user.id,
+      action: 'DELETE_AGENT',
+      targetId: agent._id,
+      targetType: 'Agent',
+      details: `Approved deletion of agent: ${agent.agentName}`,
+      ipAddress: req.ip
+    });
+
     res.json({ success: true, message: "Agent deleted successfully" });
 
   } catch (err) {
@@ -586,13 +650,8 @@ route.post('/admin/approve-deletion/:id', verifyToken, async (req, res) => {
 });
 
 // Admin Reject Deletion
-route.post('/admin/reject-deletion/:id', verifyToken, async (req, res) => {
+route.post('/admin/reject-deletion/:id', verifyToken, isAdmin, async (req, res) => {
   try {
-    const adminUser = await userModel.findById(req.user.id);
-    if (adminUser?.role !== 'admin') {
-      return res.status(403).json({ error: "Access Denied. Admins only." });
-    }
-
     const { reason } = req.body;
     const agent = await agentModel.findByIdAndUpdate(
       req.params.id,
@@ -609,6 +668,16 @@ route.post('/admin/reject-deletion/:id', verifyToken, async (req, res) => {
       type: 'error',
       role: 'vendor',
       targetId: agent._id
+    });
+
+    // Record Audit Log
+    await AuditLog.create({
+      adminId: req.user.id,
+      action: 'REJECT_VENDOR', // Reusing action or adding REJECT_DELETION? Let's use REJECT_AGENT details
+      targetId: agent._id,
+      targetType: 'Agent',
+      details: `Rejected deletion request for agent: ${agent.agentName}. Reason: ${reason}`,
+      ipAddress: req.ip
     });
 
     res.json({ success: true, agent });

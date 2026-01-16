@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
     if (user.verificationCode == code) {
         user.isVerified = true
         user.verificationCode = undefined
-        const token = generateTokenAndSetCookies(res,user._id,email,user.name)
+        const token = generateTokenAndSetCookies(res, user._id, email, user.name, user.role)
         res.status(201).json({
             id: user._id,
             name: user.name,

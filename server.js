@@ -11,6 +11,7 @@ import emailVatifiation from "./routes/emailVerification.js"
 import cookieParser from "cookie-parser";
 import vendorOnboardingRoutes from "./routes/vendorOnboardingRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import dashboardMessageRoutes from "./routes/dashboardMessageRoutes.js";
 // Vendor Routes (Moved to bottom)
 import userRoute from './routes/user.js'
 
@@ -20,7 +21,12 @@ import aibizRoutes from './routes/aibizRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import revenueRoutes from './routes/revenueRoutes.js';
 import supportRoutes from './routes/supportRoutes.js';
+<<<<<<< HEAD
 import imageRoutes from './routes/imageRoutes.js';
+=======
+import supportChatRoutes from './routes/supportChatRoutes.js';
+import vendorChatRoutes from './routes/vendorChatRoutes.js';
+>>>>>>> e7121db823a27d1ba15d4d97dcd88ca9491ce9af
 // import aibaseApp from './aibase_module/app.js';
 
 
@@ -82,6 +88,7 @@ app.use("/api/email_varification", emailVatifiation)
 // Vendor Routes
 app.use('/api/vendor', vendorOnboardingRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/dashboard-messages', dashboardMessageRoutes);
 
 // Dashboard/General Routes: /api/dashboard/stats, /api/automations, /api/admin/settings
 app.use('/api', dashboardRoutes);
@@ -103,6 +110,10 @@ app.use('/api/revenue', revenueRoutes);
 
 // Support Routes
 app.use('/api/support', supportRoutes);
+app.use('/api/support-chat', supportChatRoutes);
+
+// Vendor Chat Routes
+app.use('/api/vendor-chat', vendorChatRoutes);
 
 // Image Generation Routes
 app.use('/api/image', imageRoutes);

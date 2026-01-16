@@ -1,6 +1,7 @@
 import express from "express"
 import userModel from "../models/User.js"
 import { verifyToken } from "../middleware/authorization.js"
+import { isAdmin } from "../middleware/isAdmin.js"
 import Transaction from "../models/Transaction.js"
 
 const route = express.Router()
@@ -16,6 +17,43 @@ route.get("/", verifyToken, async (req, res) => {
     }
 
 })
+
+// GET /profile
+route.get("/profile", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await userModel.findById(userId).select('-password');
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ msg: "Something went wrong" });
+    }
+});
+
+// PUT /profile
+route.put("/profile", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { settings, notifications } = req.body;
+
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        if (!user.profile) user.profile = {};
+
+        if (settings) {
+            user.profile.settings = { ...user.profile.settings, ...settings };
+        }
+        if (notifications) {
+            user.profile.notifications = { ...user.profile.notifications, ...notifications };
+        }
+
+        await user.save();
+        res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Something went wrong" });
+    }
+});
 
 route.put("/", verifyToken, async (req, res) => {
     try {
@@ -40,7 +78,7 @@ route.put("/", verifyToken, async (req, res) => {
 })
 
 // GET /api/user/all - Admin only, fetch all users with details
-route.get("/all", verifyToken, async (req, res) => {
+route.get("/all", verifyToken, isAdmin, async (req, res) => {
     try {
         // Simple admin check (in production use middleware)
         // Assuming verifyToken attaches user info but maybe not role? 
@@ -85,7 +123,7 @@ route.get("/all", verifyToken, async (req, res) => {
 });
 
 // PUT /api/user/:id/block - Admin only, block/unblock user
-route.put("/:id/block", verifyToken, async (req, res) => {
+route.put("/:id/block", verifyToken, isAdmin, async (req, res) => {
     try {
         const userId = req.params.id;
         const { isBlocked } = req.body; // Expect boolean or toggle if not provided? Best to be explicit.
@@ -114,7 +152,7 @@ route.put("/:id/block", verifyToken, async (req, res) => {
 });
 
 // DELETE /api/user/:id - Admin only, delete user
-route.delete("/:id", verifyToken, async (req, res) => {
+route.delete("/:id", verifyToken, isAdmin, async (req, res) => {
     try {
         const userId = req.params.id;
 
@@ -133,6 +171,36 @@ route.delete("/:id", verifyToken, async (req, res) => {
     } catch (err) {
         console.error('[DELETE USER ERROR]', err);
         res.status(500).json({ error: "Failed to delete user" });
+    }
+});
+
+// GET /api/user/admin-team - Admin only, fetch all admins
+route.get("/admin-team", verifyToken, isAdmin, async (req, res) => {
+    try {
+        const admins = await userModel.find({ role: 'admin' }).select('-password');
+        res.json(admins);
+    } catch (err) {
+        console.error('[ADMIN TEAM FETCH ERROR]', err);
+        res.status(500).json({ error: "Failed to fetch admin team" });
+    }
+});
+
+// POST /api/user/add-admin - Admin only, promote user to admin
+route.post("/add-admin", verifyToken, isAdmin, async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ error: "Email is required" });
+
+        const user = await userModel.findOne({ email });
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        user.role = 'admin';
+        await user.save();
+
+        res.json({ message: "User promoted to admin successfully", user: { id: user._id, name: user.name, email: user.email } });
+    } catch (err) {
+        console.error('[ADD ADMIN ERROR]', err);
+        res.status(500).json({ error: "Failed to promote user to admin" });
     }
 });
 

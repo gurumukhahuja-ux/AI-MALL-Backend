@@ -1,6 +1,8 @@
 import express from 'express';
 import VendorMessage from '../models/VendorMessage.js';
 import Agent from '../models/Agents.js';
+import Notification from '../models/Notification.js';
+import { verifyToken } from '../middleware/authorization.js';
 import { sendVendorContactEmail } from '../services/emailService.js';
 import rateLimit from 'express-rate-limit';
 
@@ -15,10 +17,12 @@ const contactLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// POST /api/messages/contact-vendor - Submit new message from user
+// POST /api/messages/contact-vendor - Submit new message from user or admin
 router.post('/contact-vendor', contactLimiter, async (req, res) => {
     try {
-        const { agentId, userName, userEmail, subject, message, userId } = req.body;
+        const { agentId, userName, userEmail, subject, message, userId, senderType } = req.body;
+
+        const isSystemAdmin = senderType === 'Admin' || userEmail === 'admin@aimall.com';
 
         // Validate required fields
         if (!agentId || !userName || !userEmail || !subject || !message) {
@@ -28,9 +32,9 @@ router.post('/contact-vendor', contactLimiter, async (req, res) => {
             });
         }
 
-        // Validate email format
+        // Validate email format (skip for system admin if using a placeholder or trusted source)
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(userEmail)) {
+        if (!isSystemAdmin && !emailRegex.test(userEmail)) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid email address'
@@ -64,10 +68,12 @@ router.post('/contact-vendor', contactLimiter, async (req, res) => {
             message: message.trim(),
             agentName: agent.agentName,
             vendorEmail: agent.owner.email,
-            status: 'New'
+            status: 'New',
+            senderType: senderType || 'User'
         });
 
         await vendorMessage.save();
+        console.log(`[CONTACT VENDOR] Message from ${senderType || 'User'} (${userEmail}) saved for vendor ${agent.owner.email}`);
 
         // Send email notification to vendor
         try {
@@ -311,6 +317,42 @@ router.get('/:id', async (req, res) => {
     } catch (error) {
         console.error('Fetch message error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// POST /api/messages/admin-direct - Admin directly contacts a vendor
+router.post('/admin-direct', verifyToken, async (req, res) => {
+    try {
+        const { vendorId, subject, message } = req.body;
+
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Access denied. Admins only.' });
+        }
+
+        if (!vendorId || !subject || !message) {
+            return res.status(400).json({ success: false, message: 'VendorId, subject and message are required' });
+        }
+
+        // 1. Create In-App Notification for Vendor
+        await Notification.create({
+            userId: vendorId,
+            title: `Message from Admin: ${subject}`,
+            message: message,
+            type: 'info',
+            role: 'vendor'
+        });
+
+        // 2. Opt-in: Send email in background if possible
+        // (Reusing logic from send-reply or similar if needed, keeping it simple for now)
+
+        res.json({
+            success: true,
+            message: 'Message sent to vendor successfully'
+        });
+
+    } catch (error) {
+        console.error('Admin direct message error:', error);
+        res.status(500).json({ success: false, message: 'Failed to send direct message' });
     }
 });
 

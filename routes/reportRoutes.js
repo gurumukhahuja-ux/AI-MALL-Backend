@@ -1,5 +1,6 @@
 import express from 'express';
 import Report from '../models/Report.js';
+import ReportMessage from '../models/ReportMessage.js';
 import Notification from '../models/Notification.js';
 import { verifyToken } from '../middleware/authorization.js';
 import { sendAdminNotification, sendVendorReply } from '../services/emailService.js';
@@ -18,6 +19,23 @@ router.get('/', verifyToken, async (req, res) => {
     } catch (err) {
         console.error('[FETCH REPORTS ERROR]', err);
         res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+});
+
+<<<<<<< HEAD
+// GET /api/reports/my-reports (User/Vendor fetches their own reports)
+router.get('/my-reports', verifyToken, async (req, res) => {
+=======
+// GET /api/reports/me (Fetch reports for the logged-in user)
+router.get('/me', verifyToken, async (req, res) => {
+>>>>>>> ad13b78 (admin)
+    try {
+        const reports = await Report.find({ userId: req.user.id })
+            .sort({ timestamp: -1 });
+        res.json(reports);
+    } catch (err) {
+        console.error('[FETCH MY REPORTS ERROR]', err);
+        res.status(500).json({ error: 'Failed to fetch your reports' });
     }
 });
 
@@ -84,7 +102,8 @@ router.post('/:id/reply', verifyToken, async (req, res) => {
         await Notification.create({
             userId: report.userId._id,
             message: `Admin replied to your support ticket: "${message.substring(0, 50)}..."`,
-            type: 'info',
+            type: 'admin_directive',
+            role: 'vendor',
             targetId: reportId
         });
 
@@ -118,7 +137,8 @@ router.put('/:id/resolve', verifyToken, async (req, res) => {
         await Notification.create({
             userId: report.userId,
             message: notificationMessage,
-            type: status === 'resolved' ? 'success' : 'info',
+            type: 'admin_directive',
+            role: 'vendor',
             targetId: report._id
         });
 
@@ -143,6 +163,46 @@ router.delete('/:id', verifyToken, async (req, res) => {
     } catch (err) {
         console.error('[DELETE REPORT ERROR]', err);
         res.status(500).json({ error: 'Failed to delete report' });
+    }
+});
+
+// GET /api/reports/:id/messages (Fetch chat history for a report)
+router.get('/:id/messages', verifyToken, async (req, res) => {
+    try {
+        const messages = await ReportMessage.find({ reportId: req.params.id })
+            .populate('senderId', 'name email')
+            .sort({ createdAt: 1 });
+        res.json(messages);
+    } catch (err) {
+        console.error('[FETCH REPORT MESSAGES ERROR]', err);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
+// POST /api/reports/:id/messages (Send a message in the report thread)
+router.post('/:id/messages', verifyToken, async (req, res) => {
+    try {
+        const { message } = req.body;
+        const reportId = req.params.id;
+
+        const newMessage = await ReportMessage.create({
+            reportId,
+            senderId: req.user.id,
+            senderRole: req.user.role || (req.user.isVendor ? 'vendor' : 'user'),
+            message
+        });
+
+        // Also update report status if it was 'open' or 'closed' back to 'in-progress' or stay 'resolved'
+        const report = await Report.findById(reportId);
+        if (report && (report.status === 'open' || report.status === 'closed')) {
+            report.status = 'in-progress';
+            await report.save();
+        }
+
+        res.status(201).json(newMessage);
+    } catch (err) {
+        console.error('[SEND REPORT MESSAGE ERROR]', err);
+        res.status(500).json({ error: 'Failed to send message' });
     }
 });
 

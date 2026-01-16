@@ -11,7 +11,12 @@ const promoteUser = async () => {
         await mongoose.connect(process.env.MONGODB_ATLAS_URI);
         console.log("Connected to DB");
 
-        const user = await User.findOne({}); // Get ANY user (the first one)
+        const user = await User.findOne({
+            $or: [
+                { email: { $regex: 'sanskar', $options: 'i' } },
+                { name: { $regex: 'sanskar', $options: 'i' } }
+            ]
+        });
 
         if (!user) {
             console.log("No users found in DB to promote.");

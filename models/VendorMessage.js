@@ -62,6 +62,11 @@ const vendorMessageSchema = new mongoose.Schema({
     },
     repliedAt: {
         type: Date
+    },
+    senderType: {
+        type: String,
+        enum: ['User', 'Admin'],
+        default: 'User'
     }
 }, {
     timestamps: true
