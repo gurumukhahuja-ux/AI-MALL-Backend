@@ -18,7 +18,7 @@ const router = express.Router();
 
 // Get all chat sessions (summary)
 router.post("/", async (req, res) => {
-  const { content, history, systemInstruction } = req.body;
+  const { content, history, systemInstruction, attachment } = req.body;
 
   try {
     // Construct parts from history + current message
@@ -38,26 +38,211 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Add current message
-    parts.push({ text: `User: ${content}` });
+    // 3. Process Attachment(s)
+    const processAttachment = async (at) => {
+      if (!at || !at.content || typeof at.content !== 'string') return null;
+      try {
+        const dataIndex = at.content.indexOf(';base64,');
+        if (dataIndex === -1) return null;
+
+        const mimePart = at.content.substring(0, dataIndex);
+        const mimeType = mimePart.split(':').pop();
+        const base64Data = at.content.substring(dataIndex + 8);
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        console.log(`Processing attachment: ${at.name}, Type: ${mimeType}, Size: ${buffer.length} bytes`);
+
+        // Extract text for PDFs and Documents
+        if (mimeType.includes("pdf") || mimeType.includes("word") || mimeType.includes("document") || mimeType.includes("officedocument") || mimeType === "text/plain" || mimeType.includes("csv")) {
+          let text = "";
+          try {
+            if (mimeType.includes("pdf")) {
+              const pdfImport = await import('pdf-parse');
+              const pdf = pdfImport.default || pdfImport;
+              const pdfData = await pdf(buffer);
+              text = pdfData.text;
+              console.log(`✅ PDF extracted successfully: ${text.length} characters from "${at.name}"`);
+            } else if (mimeType.includes("word") || mimeType.includes("document")) {
+              const mammoth = await import('mammoth');
+              const result = await mammoth.extractRawText({ buffer: buffer });
+              text = result.value;
+              console.log(`✅ Document extracted successfully: ${text.length} characters from "${at.name}"`);
+            } else {
+              text = buffer.toString('utf-8');
+            }
+
+            if (text && text.trim()) {
+              return { text: `[DOCUMENT: "${at.name}"]\n\n${text.trim()}\n\n[END OF DOCUMENT]` };
+            } else {
+              console.warn(`⚠️ No text extracted from ${at.name}`);
+            }
+          } catch (err) {
+            console.error(`❌ Text extraction failed for ${at.name}:`, err.message);
+          }
+        }
+
+        // For images, send as inline data
+        if (mimeType.startsWith('image/')) {
+          console.log(`📷 Sending image: ${at.name}`);
+          return { inlineData: { mimeType: mimeType, data: base64Data } };
+        }
+
+        return null;
+      } catch (err) {
+        console.error("Attachment processing error:", err);
+        return null;
+      }
+    };
+
+    // Track document names for multi-document handling
+    const documentNames = [];
+
+    if (attachment) {
+      if (Array.isArray(attachment)) {
+        for (const at of attachment) {
+          if (at.name) documentNames.push(at.name);
+          const part = await processAttachment(at);
+          if (part) parts.push(part);
+        }
+      } else {
+        if (attachment.name) documentNames.push(attachment.name);
+        const part = await processAttachment(attachment);
+        if (part) parts.push(part);
+      }
+    }
+
+    // 4. Add current message AFTER attachments with multi-doc instructions
+    const hasAttachments = (Array.isArray(attachment) && attachment.length > 0) || (!Array.isArray(attachment) && attachment);
+    const hasMultipleDocs = documentNames.length > 1;
+
+    let userQuestion = content || (hasAttachments ? "Please analyze the attached document(s)." : "");
+
+    // Add special instructions for multiple documents
+    if (hasMultipleDocs) {
+      userQuestion = `${userQuestion}\n\n**IMPORTANT: You have ${documentNames.length} documents attached: ${documentNames.join(', ')}. 
+Please provide SEPARATE answers for EACH document with clear section headers like:
+📄 **Document: [filename]**
+[Your analysis for this document]
+
+Do this for EACH document so the user knows which answer belongs to which file.**`;
+    }
+
+    if (userQuestion.trim()) {
+      parts.push({ text: `User Question: ${userQuestion}` });
+    }
+
+    console.log(`📤 Sending ${parts.length} parts to Gemini AI (${documentNames.length} documents)`);
+
+    // Check if user is asking for image generation
+    const imageGenPatterns = [
+      /generate\s+(an?\s+)?image/i,
+      /create\s+(an?\s+)?image/i,
+      /make\s+(an?\s+)?image/i,
+      /draw\s+(an?\s+)?(picture|image)/i,
+      /give\s+(me\s+)?(an?\s+)?image/i,
+      /show\s+(me\s+)?(an?\s+)?image/i,
+      /image\s+of/i,
+      /picture\s+of/i,
+    ];
+
+    const isImageRequest = imageGenPatterns.some(pattern => pattern.test(content || ''));
+
+    if (isImageRequest && content) {
+      console.log("🎨 Image generation request detected!");
+
+      try {
+        const { HfInference } = await import("@huggingface/inference");
+        // Use API token if available (more reliable)
+        const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_TOKEN;
+        const hf = new HfInference(hfToken);
+
+        if (!hfToken) {
+          console.log("⚠️ No HF_TOKEN found, using anonymous access (may be rate limited)");
+        }
+
+        // Extract the prompt (remove common prefixes)
+        let imagePrompt = content
+          .replace(/generate\s+(an?\s+)?image\s+(of\s+)?/i, '')
+          .replace(/create\s+(an?\s+)?image\s+(of\s+)?/i, '')
+          .replace(/make\s+(an?\s+)?image\s+(of\s+)?/i, '')
+          .replace(/draw\s+(an?\s+)?(picture|image)\s+(of\s+)?/i, '')
+          .replace(/give\s+(me\s+)?(an?\s+)?image\s+(of\s+)?/i, '')
+          .replace(/show\s+(me\s+)?(an?\s+)?image\s+(of\s+)?/i, '')
+          .trim();
+
+        if (!imagePrompt) imagePrompt = content;
+
+        console.log(`🎨 Generating image for: "${imagePrompt}"`);
+
+        // Try multiple models in order of reliability
+        const modelsToTry = [
+          "CompVis/stable-diffusion-v1-4",
+          "runwayml/stable-diffusion-v1-5",
+          "stabilityai/stable-diffusion-2-1",
+        ];
+
+        let response = null;
+        let lastError = null;
+
+        for (const model of modelsToTry) {
+          try {
+            console.log(`🎨 Trying model: ${model}`);
+            response = await hf.textToImage({
+              model: model,
+              inputs: imagePrompt,
+              parameters: {
+                negative_prompt: "blurry, bad quality, distorted, ugly, nsfw",
+              }
+            });
+            if (response) {
+              console.log(`✅ Success with model: ${model}`);
+              break;
+            }
+          } catch (modelError) {
+            console.log(`❌ Model ${model} failed: ${modelError.message}`);
+            lastError = modelError;
+            continue;
+          }
+        }
+
+        if (!response) {
+          throw lastError || new Error("All models failed");
+        }
+
+        // Convert to base64
+        const arrayBuffer = await response.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        const imageUrl = `data:image/png;base64,${base64}`;
+
+        console.log("✅ Image generated successfully!");
+
+        return res.status(200).json({
+          reply: `Here's the image I generated for "${imagePrompt}":\n\n![Generated Image](${imageUrl})`,
+          imageUrl: imageUrl,
+          isImage: true
+        });
+
+      } catch (imgError) {
+        console.error("Image generation failed:", imgError.message);
+        // Fall through to normal Gemini response with explanation
+        return res.status(200).json({
+          reply: `I tried to generate an image but the image generation service is currently busy or unavailable. Please try again in a few moments.\n\nError: ${imgError.message}`
+        });
+      }
+    }
 
 
-    // For Google Generative AI SDK, we pass the parts directly (or a prompt string) as the "contents".
-    // It accepts an array of Content objects, or a simple string/array of parts.
-    // However, since we are sending a single turn of "user" content (that includes history context manually mocked), we just send the parts array wrapped in strict format if needed, or just the parts.
-
-    // Correct usage for single-turn content generation with this SDK
-    // model.generateContentStream([ ...parts ])
+    // Validate API Key
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(200).json({
+        reply: "[SYSTEM ERROR] GEMINI_API_KEY is not configured on the server. Please check your .env file."
+      });
+    }
 
     // Construct valid Content object
     const contentPayload = { role: "user", parts: parts };
 
     const streamingResult = await generativeModel.generateContentStream({ contents: [contentPayload] });
-
-    // Iterate stream if needed, or await full response
-    for await (const chunk of streamingResult.stream) {
-      // Just consuming stream to ensure completion
-    }
 
     const finalResponse = await streamingResult.response;
     const reply = finalResponse.text();

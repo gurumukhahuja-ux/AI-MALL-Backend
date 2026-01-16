@@ -20,6 +20,7 @@ import aibizRoutes from './routes/aibizRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import revenueRoutes from './routes/revenueRoutes.js';
 import supportRoutes from './routes/supportRoutes.js';
+import imageRoutes from './routes/imageRoutes.js';
 // import aibaseApp from './aibase_module/app.js';
 
 
@@ -36,8 +37,8 @@ connectDB().then(() => {
 
 app.use(cors());
 app.use(cookieParser())
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.json({ limit: "500mb" }));
+app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 
 app.get("/ping-top", (req, res) => {
   res.send("Top ping works");
@@ -102,6 +103,9 @@ app.use('/api/revenue', revenueRoutes);
 
 // Support Routes
 app.use('/api/support', supportRoutes);
+
+// Image Generation Routes
+app.use('/api/image', imageRoutes);
 
 
 // Global Error Handler

@@ -9,6 +9,7 @@ const messageSchema = new mongoose.Schema({
     required: true
   },
   content: { type: String, required: true },
+  attachment: { type: Object, default: null },
   timestamp: { type: Number, default: Date.now }
 });
 
