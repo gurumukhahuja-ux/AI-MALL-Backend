@@ -21,24 +21,8 @@ router.post("/", async (req, res) => {
   const { content, history, systemInstruction, attachment } = req.body;
 
   try {
-    // Construct parts from history + current message
-    let parts = [];
-
-    // Add system instruction if provided (as a user message with high priority or just prepend)
-    // Note: Vertex AI "generateContent" usually takes systemInstruction in config, but for per-request
-    // dynamic behavior with a static model instance, we can prepend it to the prompt.
-    if (systemInstruction) {
-      parts.push({ text: `System Instruction: ${systemInstruction}` });
-    }
-
-    // Add conversation history if available
-    if (history && Array.isArray(history)) {
-      history.forEach(msg => {
-        parts.push({ text: `${msg.role === 'user' ? 'User' : 'Model'}: ${msg.content}` });
-      });
-    }
-
-    // 3. Process Attachment(s)
+    // 1. Define Helper: Process Attachment
+    // Moved to top to allow history processing
     const processAttachment = async (at) => {
       if (!at || !at.content || typeof at.content !== 'string') return null;
       try {
@@ -94,25 +78,55 @@ router.post("/", async (req, res) => {
       }
     };
 
-    // Track document names for multi-document handling
-    const documentNames = [];
 
-    if (attachment) {
-      if (Array.isArray(attachment)) {
-        for (const at of attachment) {
-          if (at.name) documentNames.push(at.name);
-          const part = await processAttachment(at);
-          if (part) parts.push(part);
+    // 2. Construct Prompt Parts
+    let parts = [];
+
+    // Add System Instruction
+    if (systemInstruction) {
+      parts.push({ text: `System Instruction: ${systemInstruction}` });
+    }
+
+    // 3. Process History (Text AND Attachments)
+    if (history && Array.isArray(history)) {
+      for (const msg of history) {
+        // Add Role Label + Text
+        const roleLabel = msg.role === 'user' ? 'User' : 'Model';
+        if (msg.content) {
+          parts.push({ text: `${roleLabel}: ${msg.content}` });
         }
-      } else {
-        if (attachment.name) documentNames.push(attachment.name);
-        const part = await processAttachment(attachment);
+
+        // Add Historical Attachments (Visual Memory)
+        if (msg.attachment) {
+          const histAtts = Array.isArray(msg.attachment) ? msg.attachment : [msg.attachment];
+          for (const at of histAtts) {
+            // Only process if it has content (base64)
+            if (at.content) {
+              const part = await processAttachment(at);
+              if (part) {
+                // Label connection to previous message
+                // parts.push({ text: `[Attachment from ${roleLabel}]` }); 
+                parts.push(part);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // 4. Process Current Attachments
+    const documentNames = [];
+    if (attachment) {
+      const currAtts = Array.isArray(attachment) ? attachment : [attachment];
+      for (const at of currAtts) {
+        if (at.name) documentNames.push(at.name);
+        const part = await processAttachment(at);
         if (part) parts.push(part);
       }
     }
 
-    // 4. Add current message AFTER attachments with multi-doc instructions
-    const hasAttachments = (Array.isArray(attachment) && attachment.length > 0) || (!Array.isArray(attachment) && attachment);
+    // 5. Add Current User Message Logic
+    const hasAttachments = documentNames.length > 0;
     const hasMultipleDocs = documentNames.length > 1;
 
     let userQuestion = content || (hasAttachments ? "Please analyze the attached document(s)." : "");
@@ -131,9 +145,9 @@ Do this for EACH document so the user knows which answer belongs to which file.*
       parts.push({ text: `User Question: ${userQuestion}` });
     }
 
-    console.log(`📤 Sending ${parts.length} parts to Gemini AI (${documentNames.length} documents)`);
+    console.log(`📤 Sending ${parts.length} parts to Gemini AI (${documentNames.length} new docs)`);
 
-    // Check if user is asking for image generation
+    // 6. Image Generation Check (HuggingFace)
     const imageGenPatterns = [
       /generate\s+(an?\s+)?image/i,
       /create\s+(an?\s+)?image/i,

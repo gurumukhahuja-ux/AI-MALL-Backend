@@ -22,13 +22,8 @@ router.get('/', verifyToken, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
 // GET /api/reports/my-reports (User/Vendor fetches their own reports)
-router.get('/my-reports', verifyToken, async (req, res) => {
-=======
-// GET /api/reports/me (Fetch reports for the logged-in user)
-router.get('/me', verifyToken, async (req, res) => {
->>>>>>> ad13b78 (admin)
+router.get(['/my-reports', '/me'], verifyToken, async (req, res) => {
     try {
         const reports = await Report.find({ userId: req.user.id })
             .sort({ timestamp: -1 });

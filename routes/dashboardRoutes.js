@@ -170,13 +170,9 @@ router.get('/admin/stats', verifyToken, isAdmin, async (req, res) => {
         status: a.status || 'Inactive',
         reviewStatus: a.reviewStatus || 'Draft',
         avatar: a.avatar || '/AGENTS_IMG/default.png',
-<<<<<<< HEAD
+        owner: a.owner,
         usageCount: usageMap[a._id.toString()] || 0,
         deletionStatus: a.deletionStatus || 'None'
-=======
-        owner: a.owner,
-        usageCount: usageMap[a._id.toString()] || 0
->>>>>>> ad13b78 (admin)
       }))
     });
   } catch (err) {

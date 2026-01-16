@@ -316,28 +316,9 @@ route.patch('/:id/reactivate', verifyToken, async (req, res) => {
 
 
 // Approve (Admin)
-<<<<<<< HEAD
-route.post('/approve/:id', verifyToken, async (req, res) => {
-  const { id } = req.params;
-  console.log(`[APPROVE REQUEST] App ID: ${id} by User: ${req.user.id}`);
-
-  try {
-    // 1. Validate ID
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      console.error(`[APPROVE ERROR] Invalid Agent ID: ${id}`);
-      return res.status(400).json({ error: "Invalid Agent ID format." });
-    }
-
-    // 2. Check Admin Role
-    const adminUser = await userModel.findById(req.user.id);
-    if (!adminUser || adminUser.role !== 'admin') {
-      console.error(`[APPROVE ERROR] Unauthorized. User ${req.user.id} is not an admin.`);
-      return res.status(403).json({ error: "Access Denied. Admins only." });
-    }
-=======
 route.post('/approve/:id', verifyToken, isAdmin, async (req, res) => {
+  const { id } = req.params;
   try {
->>>>>>> ad13b78 (admin)
 
     const { message, avatar } = req.body;
     const updateData = {

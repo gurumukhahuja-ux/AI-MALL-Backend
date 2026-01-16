@@ -6,12 +6,9 @@ import User from '../models/User.js';
 import Agent from '../models/Agents.js';
 import nodemailer from 'nodemailer';
 import { verifyToken } from '../middleware/authorization.js';
-<<<<<<< HEAD
 import generateTokenAndSetCookies from '../utils/generateTokenAndSetCookies.js';
-=======
 import { isAdmin } from '../middleware/isAdmin.js';
 import AuditLog from '../models/AuditLog.js';
->>>>>>> ad13b78 (admin)
 
 const router = express.Router();
 

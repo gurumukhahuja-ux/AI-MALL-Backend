@@ -21,12 +21,9 @@ import aibizRoutes from './routes/aibizRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import revenueRoutes from './routes/revenueRoutes.js';
 import supportRoutes from './routes/supportRoutes.js';
-<<<<<<< HEAD
 import imageRoutes from './routes/imageRoutes.js';
-=======
 import supportChatRoutes from './routes/supportChatRoutes.js';
 import vendorChatRoutes from './routes/vendorChatRoutes.js';
->>>>>>> e7121db823a27d1ba15d4d97dcd88ca9491ce9af
 // import aibaseApp from './aibase_module/app.js';
 
 
