@@ -89,7 +89,33 @@ router.post("/", async (req, res) => {
 
     // 3. Process History (Text AND Attachments)
     if (history && Array.isArray(history)) {
-      for (const msg of history) {
+
+      // OPTIMIZATION: Identify the most recent image(s) to scan.
+      // sending too many base64 images crash the request (413 Payload Too Large)
+      // We will keep only the LAST 2 images for context.
+      const MAX_HIST_IMAGES = 2;
+      const validImageIndices = new Set();
+      let imgCount = 0;
+
+      // Scan backwards to find recent images
+      for (let i = history.length - 1; i >= 0; i--) {
+        const m = history[i];
+        if (m.attachment) {
+          const atts = Array.isArray(m.attachment) ? m.attachment : [m.attachment];
+          // Check if any attachment is an image
+          const hasImage = atts.some(a => a.content && a.content.includes('image/'));
+          if (hasImage) {
+            if (imgCount < MAX_HIST_IMAGES) {
+              validImageIndices.add(i);
+              imgCount++;
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < history.length; i++) {
+        const msg = history[i];
+
         // Add Role Label + Text
         const roleLabel = msg.role === 'user' ? 'User' : 'Model';
         if (msg.content) {
@@ -97,15 +123,15 @@ router.post("/", async (req, res) => {
         }
 
         // Add Historical Attachments (Visual Memory)
-        if (msg.attachment) {
+        // Only if it's one of the recent valid images
+        if (msg.attachment && validImageIndices.has(i)) {
           const histAtts = Array.isArray(msg.attachment) ? msg.attachment : [msg.attachment];
           for (const at of histAtts) {
             // Only process if it has content (base64)
             if (at.content) {
               const part = await processAttachment(at);
               if (part) {
-                // Label connection to previous message
-                // parts.push({ text: `[Attachment from ${roleLabel}]` }); 
+                // parts.push({ text: `[Visual Context from ${roleLabel}]` }); 
                 parts.push(part);
               }
             }
@@ -263,6 +289,42 @@ Do this for EACH document so the user knows which answer belongs to which file.*
 
     return res.status(200).json({ reply });
   } catch (err) {
+    console.warn(`⚠️ Gemini API failed: ${err.message}. Attempting fallback to HuggingFace...`);
+
+    try {
+      const { HfInference } = await import("@huggingface/inference");
+      // Use token if available, otherwise anonymous (rate limited but functional)
+      const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_TOKEN;
+      const hf = new HfInference(hfToken);
+
+      // Construct prompt for HF (Simplify context)
+      // Find the user's actual question from parts or content
+      let userMsg = content;
+      if (!userMsg && parts.length > 0) {
+        const lastPart = parts[parts.length - 1];
+        if (lastPart.text) userMsg = lastPart.text.replace('User Question: ', '');
+      }
+
+      const prompt = `<|system|>\nYou are AISA, a helpful AI assistant for AI Mall.\n<|user|>\n${userMsg}\n<|assistant|>\n`;
+
+      const hfRes = await hf.textGeneration({
+        model: 'microsoft/Phi-3-mini-4k-instruct',
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 512,
+          return_full_text: false,
+          temperature: 0.7
+        }
+      });
+
+      console.log("✅ HuggingFace Fallback Response Generated");
+      return res.status(200).json({ reply: hfRes.generated_text });
+
+    } catch (hfErr) {
+      console.error("❌ HF Fallback also failed:", hfErr.message);
+      // Fall through to original error handling
+    }
+
     const fs = await import('fs');
     try {
       const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;

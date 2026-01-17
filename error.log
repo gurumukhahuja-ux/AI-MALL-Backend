@@ -1,0 +1,217 @@
+
+Timestamp: 2026-01-17T05:46:06.723Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Code: undefined
+Env Project: ai-mall-482411
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T05:49:53.161Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Code: undefined
+Env Project: ai-mall-482411
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T05:53:16.788Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Code: undefined
+Env Project: ai-mall-482411
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash-001 is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T05:58:24.894Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse: [403 Forbidden] Your API key was reported as leaked. Please use another API key.
+Code: undefined
+Env Project: ai-mall-482411
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse: [403 Forbidden] Your API key was reported as leaked. Please use another API key.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:02:28.353Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse: [403 Forbidden] Your API key was reported as leaked. Please use another API key.
+Code: undefined
+Env Project: ai-mall-482411
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse: [403 Forbidden] Your API key was reported as leaked. Please use another API key.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:03:14.706Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse: [403 Forbidden] Your API key was reported as leaked. Please use another API key.
+Code: undefined
+Env Project: ai-mall-482411
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse: [403 Forbidden] Your API key was reported as leaked. Please use another API key.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:22:03.405Z
+Error: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"aiplatform.googleapis.com","serviceTitle":"Vertex AI API","containerInfo":"a-series-484205","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","consumer":"projects/a-series-484205"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'c:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/Google_Cloud_API/a-series.json'
+Creds File Exists: true
+Stack: ClientError: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"aiplatform.googleapis.com","serviceTitle":"Vertex AI API","containerInfo":"a-series-484205","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","consumer":"projects/a-series-484205"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+    at throwErrorIfNotOK (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\post_fetch_processing.js:32:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async generateContentStream (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\generate_content.js:101:5)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:23:05.442Z
+Error: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"aiplatform.googleapis.com","consumer":"projects/a-series-484205","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","serviceTitle":"Vertex AI API","containerInfo":"a-series-484205"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'c:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/Google_Cloud_API/a-series.json'
+Creds File Exists: true
+Stack: ClientError: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"aiplatform.googleapis.com","consumer":"projects/a-series-484205","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","serviceTitle":"Vertex AI API","containerInfo":"a-series-484205"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+    at throwErrorIfNotOK (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\post_fetch_processing.js:32:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async generateContentStream (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\generate_content.js:101:5)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:30:07.225Z
+Error: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"aiplatform.googleapis.com","consumer":"projects/a-series-484205","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","containerInfo":"a-series-484205","serviceTitle":"Vertex AI API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'c:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/Google_Cloud_API/a-series.json'
+Creds File Exists: true
+Stack: ClientError: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"aiplatform.googleapis.com","consumer":"projects/a-series-484205","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","containerInfo":"a-series-484205","serviceTitle":"Vertex AI API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+    at throwErrorIfNotOK (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\post_fetch_processing.js:32:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async generateContentStream (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\generate_content.js:101:5)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:30:18.182Z
+Error: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"a-series-484205","service":"aiplatform.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","consumer":"projects/a-series-484205","serviceTitle":"Vertex AI API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'c:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/Google_Cloud_API/a-series.json'
+Creds File Exists: true
+Stack: ClientError: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"a-series-484205","service":"aiplatform.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","consumer":"projects/a-series-484205","serviceTitle":"Vertex AI API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+    at throwErrorIfNotOK (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\post_fetch_processing.js:32:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async generateContentStream (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\generate_content.js:101:5)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:31:46.306Z
+Error: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","consumer":"projects/a-series-484205","containerInfo":"a-series-484205","service":"aiplatform.googleapis.com","serviceTitle":"Vertex AI API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'c:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/Google_Cloud_API/a-series.json'
+Creds File Exists: true
+Stack: ClientError: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205","consumer":"projects/a-series-484205","containerInfo":"a-series-484205","service":"aiplatform.googleapis.com","serviceTitle":"Vertex AI API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Vertex AI API has not been used in project a-series-484205 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=a-series-484205"}]}]}}
+    at throwErrorIfNotOK (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\post_fetch_processing.js:32:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async generateContentStream (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\generate_content.js:101:5)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:36:19.412Z
+Error: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Permission 'aiplatform.endpoints.predict' denied on resource '//aiplatform.googleapis.com/projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001' (or it may not exist).","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"IAM_PERMISSION_DENIED","domain":"aiplatform.googleapis.com","metadata":{"permission":"aiplatform.endpoints.predict","resource":"projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001"}}]}}
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'c:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/Google_Cloud_API/a-series.json'
+Creds File Exists: true
+Stack: ClientError: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Permission 'aiplatform.endpoints.predict' denied on resource '//aiplatform.googleapis.com/projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001' (or it may not exist).","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"IAM_PERMISSION_DENIED","domain":"aiplatform.googleapis.com","metadata":{"permission":"aiplatform.endpoints.predict","resource":"projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001"}}]}}
+    at throwErrorIfNotOK (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\post_fetch_processing.js:32:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async generateContentStream (C:\Users\sansk\Desktop\AI-MALL\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\generate_content.js:101:5)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T06:41:40.863Z
+Error: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Permission 'aiplatform.endpoints.predict' denied on resource '//aiplatform.googleapis.com/projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001' (or it may not exist).","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"IAM_PERMISSION_DENIED","domain":"aiplatform.googleapis.com","metadata":{"resource":"projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001","permission":"aiplatform.endpoints.predict"}}]}}
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'c:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/Google_Cloud_API/a-series.json'
+Creds File Exists: true
+Stack: ClientError: [VertexAI.ClientError]: got status: 403 Forbidden. {"error":{"code":403,"message":"Permission 'aiplatform.endpoints.predict' denied on resource '//aiplatform.googleapis.com/projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001' (or it may not exist).","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"IAM_PERMISSION_DENIED","domain":"aiplatform.googleapis.com","metadata":{"resource":"projects/a-series-484205/locations/us-central1/publishers/google/models/gemini-1.5-flash-001","permission":"aiplatform.endpoints.predict"}}]}}
+    at throwErrorIfNotOK (C:\Users\sansk\Desktop\AI-Mall\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\post_fetch_processing.js:32:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async generateContentStream (C:\Users\sansk\Desktop\AI-Mall\AI-MALL-Backend\node_modules\@google-cloud\vertexai\build\src\functions\generate_content.js:101:5)
+    at async file:///C:/Users/sansk/Desktop/AI-Mall/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T07:37:52.089Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T07:38:22.702Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
+
+Timestamp: 2026-01-17T07:38:41.969Z
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Code: undefined
+Env Project: a-series-484205
+Env Creds Path: 'undefined'
+Creds File Exists: N/A
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContentStream (file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/node_modules/@google/generative-ai/dist/index.mjs:860:22)
+    at async file:///C:/Users/sansk/Desktop/AI-MALL/AI-MALL-Backend/routes/chatRoutes.js:285:29
+-------------------------------------------
